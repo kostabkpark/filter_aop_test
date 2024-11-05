@@ -36,7 +36,7 @@ public class LoginController {
             String uuid = UUID.randomUUID().toString();
             session.setAttribute("session_id", uuid);
             session.setAttribute("userId", user.getUserId());
-            session.setMaxInactiveInterval(60);
+            session.setMaxInactiveInterval(60*2);
             Cookie cookie = new Cookie("session_id", uuid);
             resp.addCookie(cookie);
             return "로그인 성공";
@@ -45,11 +45,14 @@ public class LoginController {
     }
 
     @GetMapping("/logout")
-    public String logout(HttpServletRequest req) {
+    public String logout(HttpServletRequest req, HttpServletResponse resp) {
 //        log.info("logout ==> {}", req.getRequestURI());
         HttpSession session = req.getSession(false);
         if(session != null) {
             session.invalidate();
+            Cookie cookie = new Cookie("session_id", null);
+            cookie.setMaxAge(0);
+            resp.addCookie(cookie);
         }
         return "로그아웃 완료";
     }
